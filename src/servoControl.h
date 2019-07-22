@@ -3,12 +3,14 @@
 
 #include "stdio.h"
 
+typedef void (*timerCB)(void);
+
 typedef enum {
     CLOCKWISE,
     COUNTERCLOCKWISE,
 } SERVO_CONTROL_DIRECTION;
 
-void servoControlInit(void);
+void servoControlInit(timerCB cbIn);
 void servoControlStart(uint32_t speed, SERVO_CONTROL_DIRECTION direction);
 void servoControlStop(void);
 void servoControlSetDirection(SERVO_CONTROL_DIRECTION direction);
