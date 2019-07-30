@@ -131,7 +131,7 @@ void measurementInit(BufferReadCB bufferReadyCB, uint16_t buffer[], uint32_t buf
     };
     dmaCb      = bufferReadyCB;
     beginBuff  = buffer;
-    middleBuff = buffer + bufferSize;
+    middleBuff = buffer + bufferSize / 2;
     /***GAFIO config***/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     /***GPIO config***/
