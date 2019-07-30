@@ -185,6 +185,14 @@
 		<Unit filename="src\main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src\measurement.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\measurement.h" />
+		<Unit filename="src\serviceFunction.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\serviceFunction.h" />
 		<Unit filename="src\servoControl.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -195,12 +203,85 @@
 		<Unit filename="src\system_stm32f10x.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_core.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_def.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_init.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_int.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_lib.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_mem.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_regs.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_sil.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\inc\usb_type.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\core\src\usb_core.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\core\src\usb_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\core\src\usb_int.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\core\src\usb_mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\core\src\usb_regs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\core\src\usb_sil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\hw_config.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\platform_config.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\spl_.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\stm32_it.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\usb_conf.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\usb_desc.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\usb_istr.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\usb_prop.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\usb_pwr.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\usb_user_setings.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\inc\usbHIDInterface.h" />
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\src\hw_config.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\src\stm32_it.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\src\usb_desc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\src\usb_endp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\src\usb_istr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\src\usb_prop.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="STM32_USB-FS-Device_Driver\portable\src\usb_pwr.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="stm32f103c8_flash.ld" />
 		<Unit filename="stm32f103c8_sram.ld" />
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="Release" active_interface="ST-link">
+				<target_debugging_settings target="Release" active_interface="OpenOCD">
+					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="" dont_start_server="false" backoff_time="100" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
+						<family_options family_id="All">
+							<option opt_id="ID_BOARD_CH" opt_value="" />
+							<option opt_id="ID_INTERFACE_CH" opt_value="" />
+							<option opt_id="ID_TARGET_CH" opt_value="" />
+							<option opt_id="ID_TEXTCTRL1" opt_value="" />
+							<option opt_id="ID_HW_BKP_LIMIT" opt_value="" />
+							<option opt_id="ID_RESET_CH" opt_value="halt" />
+							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
+							<option opt_id="ID_SEMIHOST_CHECK" opt_value="0" />
+							<option opt_id="ID_ADD_COMMANDS" opt_value="" />
+							<option opt_id="ID_ADD_CMNDS" opt_value="-f interface/cmsis-dap.cfg -f target/stm32f1x.cfg" />
+						</family_options>
+					</debug_interface>
 					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBITZ}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="0" reg_filter="0" active_family="STMicroelectronics" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="STMicroelectronics">
 							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
@@ -218,7 +299,7 @@
 					</debug_interface>
 				</target_debugging_settings>
 				<target_debugging_settings target="Debug" active_interface="OpenOCD">
-					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="" dont_start_server="false" backoff_time="5000" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
+					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="STM32F103.svd" dont_start_server="false" backoff_time="5000" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All">
 							<option opt_id="ID_BOARD_CH" opt_value="" />
 							<option opt_id="ID_INTERFACE_CH" opt_value="" />
