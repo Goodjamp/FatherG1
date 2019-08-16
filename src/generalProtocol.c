@@ -6,7 +6,6 @@
 
 
 #define BUFF_SIZE 64
-#define CHANNEL_CNT 0x7
 #define CHANNEL_ALL 0xFF
 
 typedef enum{
@@ -25,7 +24,7 @@ typedef struct GpCommand{
 } GpCommand;
 
 typedef struct {
-    uint16_t size;
+    uint16_t adCnt;
     uint16_t data[];
 }GpADCSubcommand;
 
@@ -65,14 +64,14 @@ void gpDecode(uint8_t buff[],  uint32_t size)
     }
 }
 
-bool gpSendADC(uint16_t buff[], uint16_t size)
+bool gpSendADC(uint16_t buff[], uint16_t adCnt)
 {
     GpCommandBuff command = {
         .command.headr = GP_ADC
     };
     GpADCSubcommand *gpADCSubcommand = (GpADCSubcommand *)command.command.subcommand;
-    gpADCSubcommand->size = size;
-    memcpy((uint8_t*)gpADCSubcommand->data, (uint8_t*)buff, size * 2);
+    gpADCSubcommand->adCnt = adCnt;
+    memcpy((uint8_t*)gpADCSubcommand->data, (uint8_t*)buff, adCnt * 2);
     gpCbList->gpSendCb(command.buff, sizeof(command));
     return true;
 }

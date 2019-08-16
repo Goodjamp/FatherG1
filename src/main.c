@@ -12,15 +12,16 @@
 #include "usbHIDInterface.h"
 #include "usb_user_setings.h"
 
-#define ADC_REZ_SIZE  (56 * 2)
-#define EP_N           1
+#define ADC_REZ_CNT        8
+#define ADC_REZ_BUFF_SIZE  (CHANNEL_CNT * ADC_REZ_CNT * 2)
+#define EP_N               1
 
 void gpSendCb(uint8_t buff[], uint32_t size);
 void gpStopCommandCb(uint8_t channel);
 void gpStartClockWiseCommandCb(uint8_t channel);
 void gpStartContrClockWiseCommandCb(uint8_t channel);
 
-uint16_t  adcRezBuff[ADC_REZ_SIZE];
+uint16_t  adcRezBuff[ADC_REZ_BUFF_SIZE];
 MesPeriod timeAdc;
 RingBuff  rxRingBuff;
 RingBuff  txRingBuff;
@@ -51,7 +52,7 @@ void adcCompletedCb(uint16_t rez[])
     protoPrepareMesRezMessage((uint8_t *)rez, sizeof(dataCommand.buff));
     TX_F = true;
     */
-    gpSendADC(rez,  uint16_t size);
+    gpSendADC(rez,  ADC_REZ_CNT);
 }
 
 void usbHIDRxCB(uint8_t epNumber, uint8_t numRx, uint8_t *rxData)
@@ -90,15 +91,15 @@ int main(void)
     uint32_t txSize;
     gpInit( &gpInitCb);
     usbHIDInit();
-    measurementInit(adcCompletedCb, adcRezBuff, ADC_REZ_SIZE);
+    measurementInit(adcCompletedCb, adcRezBuff, ADC_REZ_BUFF_SIZE);
     usbHIDAddRxCB(usbHIDRxCB);
     usbHIDAddTxCompleteCB(txCompleteCB);
-
     //initSysTic();
-    measurementStart();
-    servoControlStart(20, CLOCKWISE);
     ringBuffInit(&rxRingBuff, RING_BUFF_DEPTH);
     ringBuffInit(&txRingBuff, RING_BUFF_DEPTH);
+
+    measurementStart();
+    servoControlStart(20, CLOCKWISE);
     while(1)
     {
         if(popRingBuff(&rxRingBuff, rxBuff, &rxSize)) {
