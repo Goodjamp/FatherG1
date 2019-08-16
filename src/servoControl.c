@@ -61,6 +61,8 @@ void servoControlInit(timerCB cbIn)
     TIM_GenerateEvent(SERVO_TIM, TIM_EventSource_Update);
     TIM_CtrlPWMOutputs(SERVO_TIM, ENABLE);
     TIM_ITConfig(SERVO_TIM, TIM_IT_Update, ENABLE);
+    //enable DMA request
+    //TIM_DMACmd(SERVO_TIM, TIM_DMA_CC1, ENABLE);
     NVIC_EnableIRQ(TIM1_UP_IRQn);
 }
 
@@ -81,20 +83,7 @@ void servoControlSetSpeed(uint32_t speed) {
     TIM_SetCompare1(SERVO_TIM, speed);
 }
 
+void servoControlStop(void)
+{
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
