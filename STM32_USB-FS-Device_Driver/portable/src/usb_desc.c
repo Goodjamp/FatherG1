@@ -18,36 +18,18 @@
 /*******************          REPORT DESCRIPTOR          *************************/
 /*********************************************************************************/
 const uint8_t CustomHID_ReportDescriptor[] ={
-		  0x06, 0xFF, 0x00,      /* USAGE_PAGE (Vendor Page: 0xFF00) */
-		    0x09, 0x01,            /* USAGE                          */
-		    0xa1, 0x01,            /* COLLECTION (Application)       */
-		    /* 6 */
-
-		    /* Out */
-//		    0x85, 0x01,            /*     REPORT_ID (1)              */
-//		    0x09, 0x01,            /*     USAGE (Out)	             */
-		    0x15, 0x00,            /*     LOGICAL_MINIMUM (0)        */
-		    0x26, 0xff, 0x00,      /*     LOGICAL_MAXIMUM (255)      */
-		    0x75, 0x08,            /*     REPORT_SIZE (8)            */
-		    0x95, EP_COUNT,            /*     REPORT_COUNT               */
-//		    0x91, 0x82,            /*     OUTPUT (Data,Var,Abs,Vol)  */
-		    0x09, 0x01,            /* USAGE */
-
-            0x81, 0b10,            /*     INPUT (Data,Var,Abs,Vol)   */
-		    0x95, EP_COUNT,            /*     REPORT_COUNT               */
-		    0x09, 0x01,            /* USAGE */
-		    0x91, 0b10,            /*     OUTPUT (Data,Var,Abs,Vol)  */
-		    /* In */
-//		    0x85, 0x07,            /*     REPORT_ID (7)              */
-//		    0x09, 0x07,            /*     USAGE (IN)             */
-//		    0x15, 0x00,            /*     LOGICAL_MINIMUM (0)        */
-//		    0x26, 0xff, 0x00,      /*     LOGICAL_MAXIMUM (255)      */
-//		    0x75, 0x08,            /*     REPORT_SIZE (8)            */
-//		    0x95, EP_SIZE,            /*     REPORT_COUNT              */
-//		    0x81, 0x82,            /*     INPUT (Data,Var,Abs,Vol)   */
-		    /* 161 */
-
-		    0xc0 	          /*     END_COLLECTION	             */
+		  0x06, 0xFF, 0x00,        /* USAGE_PAGE (Vendor Page: 0xFF00) */
+		    0x09, 0x01,            /* USAGE*/
+		    0xa1, 0x01,            /*COLLECTION (Application)*/
+		    0x15, 0x00,            /*LOGICAL_MINIMUM (0)*/
+		    0x26, 0xff, 0x00,      /*LOGICAL_MAXIMUM (255)*/
+		    0x75, 0x08,            /*REPORT_SIZE (8)*/
+		    0x95, EP_COUNT,        /*REPORT_COUNT*/
+		    0x09, 0x01,            /*USAGE */
+            0x81, 0b10,            /*INPUT (Data,Var,Abs,Vol)*/
+		    0x09, 0x01,            /*USAGE */
+		    0x91, 0b10,            /*OUTPUT (Data,Var,Abs,Vol) */
+		    0xc0 	               /*END_COLLECTION*/
 };
 
 /*********************************************************************************/

@@ -13,5 +13,8 @@ typedef struct MesPeriod{
 void     initSysTic(void);
 uint32_t getSysTime(void);
 void     addTimeMes(MesPeriod *mesPeriod);
+void     initTestGpio(void);
+void     testPinSet(void);
+void     testPinReset(void);
 
 #endif

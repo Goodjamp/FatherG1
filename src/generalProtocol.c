@@ -71,7 +71,7 @@ bool gpSendADC(uint16_t buff[], uint16_t adCnt)
     };
     GpADCSubcommand *gpADCSubcommand = (GpADCSubcommand *)command.command.subcommand;
     gpADCSubcommand->adCnt = adCnt;
-    memcpy((uint8_t*)gpADCSubcommand->data, (uint8_t*)buff, adCnt * 2);
+    memcpy((uint8_t*)gpADCSubcommand->data, (uint8_t*)buff, gpADCSubcommand->adCnt * 2);
     gpCbList->gpSendCb(command.buff, sizeof(command));
     return true;
 }

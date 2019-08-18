@@ -122,6 +122,7 @@ static const struct {
 static BufferReadCB dmaCb = NULL;
 static uint16_t    *beginBuff;
 static uint16_t    *middleBuff;
+static uint16_t    dmaBufferSize;
 
 void measurementInit(BufferReadCB bufferReadyCB, uint16_t buffer[], uint32_t bufferSize)
 {
@@ -131,6 +132,7 @@ void measurementInit(BufferReadCB bufferReadyCB, uint16_t buffer[], uint32_t buf
     };
     dmaCb      = bufferReadyCB;
     beginBuff  = buffer;
+    dmaBufferSize = bufferSize;
     middleBuff = buffer + bufferSize / 2;
     /***GAFIO config***/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
@@ -143,7 +145,7 @@ void measurementInit(BufferReadCB bufferReadyCB, uint16_t buffer[], uint32_t buf
     }
     /***ADC config***/
     ADC_InitTypeDef adcInitStruct;
-    RCC_PCLK2Config(RCC_HCLK_Div2);
+    RCC_PCLK2Config(RCC_HCLK_Div8);
     RCC_ADCCLKConfig(RCC_PCLK2_Div8);
     RCC_APB2PeriphClockCmd(SEL_ADC_ENABLE, ENABLE);
     ADC_Cmd(SEL_ADC, ENABLE);
@@ -169,7 +171,7 @@ void measurementInit(BufferReadCB bufferReadyCB, uint16_t buffer[], uint32_t buf
     dmaInitStruct.DMA_PeripheralBaseAddr = (uint32_t)&SEL_ADC->DR;
     dmaInitStruct.DMA_MemoryBaseAddr     = (uint32_t)buffer ;
     dmaInitStruct.DMA_DIR                = DMA_DIR_PeripheralSRC;
-    dmaInitStruct.DMA_BufferSize         = bufferSize;
+    dmaInitStruct.DMA_BufferSize         = dmaBufferSize;
     dmaInitStruct.DMA_PeripheralInc      = DMA_PeripheralInc_Disable;
     dmaInitStruct.DMA_MemoryInc          = DMA_MemoryInc_Enable;
     dmaInitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
@@ -202,12 +204,15 @@ void SEL_DMA_CB(void)
 
 void measurementStart(void)
 {
+    DMA_SetCurrDataCounter(SEL_DMA_CH, dmaBufferSize);
     DMA_Cmd(SEL_DMA_CH, ENABLE);
+    ADC_Cmd(SEL_ADC, ENABLE);
     ADC_SoftwareStartConvCmd(SEL_ADC, ENABLE);
 }
 
 void measurementStop(void)
 {
     DMA_Cmd(SEL_DMA_CH, DISABLE);
+    ADC_Cmd(SEL_ADC, DISABLE);
     ADC_SoftwareStartConvCmd(SEL_ADC, DISABLE);
 }

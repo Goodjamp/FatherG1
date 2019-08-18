@@ -5,7 +5,7 @@
 #include "stdbool.h"
 
 #define BUFF_SIZE       64
-#define RING_BUFF_DEPTH  2
+#define RING_BUFF_DEPTH  8
 
 typedef struct RingBuff {
     struct {
@@ -15,13 +15,15 @@ typedef struct RingBuff {
     uint8_t writeP;
     uint8_t readP;
     uint8_t cnt;
-    uint8_t size;
+    uint32_t size;
+    bool    busy;
 } RingBuff;
 
 void ringBuffInit(RingBuff *ringBuff, uint8_t ringBuffSize);
 uint8_t ringBuffGetCnt(RingBuff *ringBuff);
 bool pushRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t size);
 bool popRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t *size);
+void ringBuffClear(RingBuff *ringBuff);
 
 
 #endif
