@@ -12,18 +12,18 @@ typedef struct RingBuff {
         uint8_t  dataBuff[BUFF_SIZE];
         uint16_t dataSize;
     } data[RING_BUFF_DEPTH];
-    uint8_t writeP;
-    uint8_t readP;
-    uint8_t cnt;
+    uint8_t  writeP;
+    uint8_t  readP;
+    uint8_t  cnt;
     uint32_t size;
-    bool    busy;
+    bool     busy;
 } RingBuff;
 
-void ringBuffInit(RingBuff *ringBuff, uint8_t ringBuffSize);
+void    ringBuffInit(RingBuff *ringBuff, uint8_t ringBuffSize);
 uint8_t ringBuffGetCnt(RingBuff *ringBuff);
-bool pushRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t size);
-bool popRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t *size);
-void ringBuffClear(RingBuff *ringBuff);
+bool    pushRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t size);
+bool    popRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t *size);
+void    ringBuffClear(RingBuff *ringBuff);
 
 
 #endif

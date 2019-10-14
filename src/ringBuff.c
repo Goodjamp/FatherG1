@@ -23,11 +23,9 @@ void ringBuffClear(RingBuff *ringBuff)
         return;
     }
     ringBuff->busy   = true;
-
     ringBuff->writeP = 0;
     ringBuff->readP  = 0;
     ringBuff->cnt    = 0;
-
     ringBuff->busy   = false;
     return;
 }

@@ -145,8 +145,6 @@ void measurementInit(BufferReadCB bufferReadyCB, uint16_t buffer[], uint32_t buf
     }
     /***ADC config***/
     ADC_InitTypeDef adcInitStruct;
-    RCC_PCLK2Config(RCC_HCLK_Div8);
-    RCC_ADCCLKConfig(RCC_PCLK2_Div8);
     RCC_APB2PeriphClockCmd(SEL_ADC_ENABLE, ENABLE);
     ADC_Cmd(SEL_ADC, ENABLE);
     ADC_StructInit(&adcInitStruct);
