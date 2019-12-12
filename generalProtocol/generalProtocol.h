@@ -4,8 +4,6 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-#define CHANNEL_CNT 0x7
-
 typedef enum {
     COMMAND_DATA_FLAG_8_BIT_SIZE,
     COMMAND_DATA_FLAG_16_BIT_SIZE,

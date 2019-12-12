@@ -3,12 +3,12 @@
 	<EmBitzVersion release="1.11" revision="0" />
 	<FileVersion major="1" minor="0" />
 	<Project>
-		<Option title="jalousieControl" />
+		<Option title="FatherG1" />
 		<Option pch_mode="2" />
 		<Option compiler="armgcc_eb" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\jalousieControl.elf" />
+				<Option output="bin\Debug\FatherG1.elf" />
 				<Option object_output="obj\Debug\" />
 				<Option type="0" />
 				<Option compiler="armgcc_eb" />
@@ -36,7 +36,7 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\jalousieControl.elf" />
+				<Option output="bin\Release\FatherG1.elf" />
 				<Option object_output="obj\Release\" />
 				<Option type="0" />
 				<Option create_hex="1" />
@@ -45,7 +45,7 @@
 				<Compiler>
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
-					<Add option="-O3" />
+					<Add option="-Os" />
 					<Add option="-g2" />
 				</Compiler>
 				<Cpp>
@@ -85,13 +85,120 @@
 			<Add option="-eb_start_files" />
 			<Add option="-eb_lib=n" />
 		</Linker>
+		<Unit filename="adcHal\adcHal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="adcHal\adcHal.h" />
+		<Unit filename="buttons\buttons.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="buttons\buttons.h" />
+		<Unit filename="buttons\buttonsHall.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="buttons\buttonsHall.h" />
 		<Unit filename="cmsis\core_cm3.h" />
 		<Unit filename="cmsis\core_cmFunc.h" />
 		<Unit filename="cmsis\core_cmInstr.h" />
+		<Unit filename="displaySsd1306HAL\displaySsd1306HAL.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="displaySsd1306HAL\displaySsd1306HAL.h" />
+		<Unit filename="dspApi\dspAPI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dspApi\dspAPI.h" />
+		<Unit filename="FreeRTOS_Source\croutine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FreeRTOS_Source\event_groups.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FreeRTOS_Source\include\croutine.h" />
+		<Unit filename="FreeRTOS_Source\include\deprecated_definitions.h" />
+		<Unit filename="FreeRTOS_Source\include\event_groups.h" />
+		<Unit filename="FreeRTOS_Source\include\FreeRTOS.h" />
+		<Unit filename="FreeRTOS_Source\include\list.h" />
+		<Unit filename="FreeRTOS_Source\include\mpu_prototypes.h" />
+		<Unit filename="FreeRTOS_Source\include\mpu_wrappers.h" />
+		<Unit filename="FreeRTOS_Source\include\portable.h" />
+		<Unit filename="FreeRTOS_Source\include\projdefs.h" />
+		<Unit filename="FreeRTOS_Source\include\queue.h" />
+		<Unit filename="FreeRTOS_Source\include\semphr.h" />
+		<Unit filename="FreeRTOS_Source\include\StackMacros.h" />
+		<Unit filename="FreeRTOS_Source\include\task.h" />
+		<Unit filename="FreeRTOS_Source\include\timers.h" />
+		<Unit filename="FreeRTOS_Source\list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FreeRTOS_Source\portable\GCC\ARM_CM3\port.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FreeRTOS_Source\portable\GCC\ARM_CM3\portmacro.h" />
+		<Unit filename="FreeRTOS_Source\portable\MemMang\heap_1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FreeRTOS_Source\queue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FreeRTOS_Source\tasks.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FreeRTOS_Source\timers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="generalProtocol\generalProtocol.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="generalProtocol\generalProtocol.h" />
+		<Unit filename="I2C_HAL\i2c_source.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="I2C_HAL\i2c_source.h" />
+		<Unit filename="I2C_HAL\i2c_user_interface.h" />
 		<Unit filename="inc\stm32f10x.h" />
 		<Unit filename="inc\stm32f10x_conf.h" />
 		<Unit filename="inc\system_stm32f10x.h" />
+		<Unit filename="Measurement\Measurement.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Measurement\Measurement.h" />
 		<Unit filename="readme.txt" />
+		<Unit filename="relayHall\relayHall.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="relayHall\relayHall.h" />
+		<Unit filename="ringBuff\ringBuff.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ringBuff\ringBuff.h" />
+		<Unit filename="screenHall\frameHall.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="screenHall\frameHall.h" />
+		<Unit filename="screenHall\screenImage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="screenHall\symbolsArial11pts.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="screenHall\symbolsArial11pts.h" />
+		<Unit filename="screenHall\symbolsArial16pts .c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="screenHall\symbolsArial16pts.h" />
+		<Unit filename="screenHall\symbolsArial8pts.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="screenHall\symbolsArial8pts.h" />
+		<Unit filename="screenHall\symbolsSegoePrint14pts.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="screenHall\symbolsSegoePrint14pts.h" />
+		<Unit filename="servoControl\servoControl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="servoControl\servoControl.h" />
 		<Unit filename="SPL\inc\misc.h" />
 		<Unit filename="SPL\inc\stm32f10x_adc.h" />
 		<Unit filename="SPL\inc\stm32f10x_bkp.h" />
@@ -184,33 +291,17 @@
 		<Unit filename="SPL\src\stm32f10x_wwdg.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src\dspAPI.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src\dspAPI.h" />
-		<Unit filename="src\generalProtocol.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src\generalProtocol.h" />
+		<Unit filename="src\FreeRTOSConfig.h" />
 		<Unit filename="src\main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src\measurement.c">
+		<Unit filename="src\relayConnectionPicture.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src\measurement.h" />
-		<Unit filename="src\ringBuff.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src\ringBuff.h" />
 		<Unit filename="src\serviceFunction.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src\serviceFunction.h" />
-		<Unit filename="src\servoControl.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src\servoControl.h" />
 		<Unit filename="src\startup_stm32f10x_md.S">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -278,11 +369,19 @@
 		</Unit>
 		<Unit filename="stm32f103c8_flash.ld" />
 		<Unit filename="stm32f103c8_sram.ld" />
+		<Unit filename="usbProto\usbProto.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="usbProto\usbProto.h" />
+		<Unit filename="userMenu\userMenu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="userMenu\userMenu.h" />
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="Release" active_interface="OpenOCD">
-					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="" dont_start_server="false" backoff_time="100" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
+				<target_debugging_settings target="Debug" active_interface="OpenOCD">
+					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="STM32F103.svd" dont_start_server="false" backoff_time="5000" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All">
 							<option opt_id="ID_BOARD_CH" opt_value="" />
 							<option opt_id="ID_INTERFACE_CH" opt_value="" />
@@ -312,8 +411,8 @@
 						</family_options>
 					</debug_interface>
 				</target_debugging_settings>
-				<target_debugging_settings target="Debug" active_interface="OpenOCD">
-					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="STM32F103.svd" dont_start_server="false" backoff_time="5000" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
+				<target_debugging_settings target="Release" active_interface="OpenOCD">
+					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="" dont_start_server="false" backoff_time="100" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All">
 							<option opt_id="ID_BOARD_CH" opt_value="" />
 							<option opt_id="ID_INTERFACE_CH" opt_value="" />
