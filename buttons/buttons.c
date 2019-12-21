@@ -8,13 +8,13 @@
 #include "buttons.h"
 #include "buttonsHall.h"
 
-#define DEBOUNCE_CNT           5
-#define POST_PRESS_TIMEOUT_CNT 10
+#define DEBOUNCE_CNT           3
+#define POST_PRESS_TIMEOUT_CNT 25
 
 const uint32_t pressTypeTimings[PRESS_TYPE_CNT] = {
     [PRESS_SHORT]     = 0,
-    [PRESS_LONG]      = 50,
-    [PRESS_LONG_LONG] = 50 * 3,
+    [PRESS_LONG]      = 25,
+    [PRESS_LONG_LONG] = 75,
 };
 
 const ButtonActionDescription *buttonDescriptionLocal;
@@ -37,7 +37,7 @@ void buttonsInitButton(const ButtonActionDescription *buttonDescription, uint32_
     for(uint32_t k = 0; k < BUTTON_CNT; k++) {
         buttonProcessing[k].use = false;
         buttonProcessing[k].inProcessing = false;
-        buttonProcessing[k].postPressTime = false;
+        buttonProcessing[k].postPressTime = 0;
         for(uint32_t m = 0; m < PRESS_TYPE_CNT; m++) {
             buttonProcessing[k].pressType[m] = false;
         }
@@ -93,13 +93,15 @@ static void buttonsProcessing(void)
             continue;
         }
         if(buttonProcessing[k].postPressTime) {
-            if(buttonProcessing[k].postPressTime++ >= POST_PRESS_TIMEOUT_CNT) {
-                buttonProcessing[k].postPressTime = 0;
+            if(buttonProcessing[k].postPressTime++ < POST_PRESS_TIMEOUT_CNT) {
+                continue;
             }
+            buttonProcessing[k].postPressTime = 0;
         }
         // wait for debounce period
-        if((buttonProcessing[k].debounceTime++ <= DEBOUNCE_CNT)
+        if((buttonProcessing[k].debounceTime <= DEBOUNCE_CNT)
            && buttonProcessing[k].inProcessing) {
+            buttonProcessing[k].debounceTime++;
             buttonProcessing[k].pressTime++;
             continue;
         }
@@ -110,9 +112,11 @@ static void buttonsProcessing(void)
             buttonProcessing[k].inProcessing = true;
             buttonProcessing[k].pressTime++;
             if(buttonsPressTypeDetect(k)) {
+                buttonProcessing[k].inProcessing = false;
+                buttonProcessing[k].pressTime     = 0;
                 buttonProcessing[k].postPressTime++;
+                buttonProcessing[k].debounceTime = 0;
             }
-
             continue;
         } else if(!buttonState && !buttonProcessing[k].inProcessing) {
         // if no press detect and button don't processing now: do nothing

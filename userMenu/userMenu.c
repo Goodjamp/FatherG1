@@ -67,7 +67,7 @@ static const ButtonActionDescription buttonActionDescription[] = {
 PRESS_TYPE pressType = PRESS_SHORT;
 extern const uint8_t schematicBitmaps[];
 uint32_t button = 0;
-uint8_t stringButton[20] = "Button N:  ";
+uint8_t stringButton[20] = "BUTTON N:  ";
 const char *stringPressType[] = {
     [PRESS_SHORT]     = "SHORT",
     [PRESS_LONG]      = "LONG",
@@ -252,7 +252,7 @@ void displauInit(void)
     displayInit(sendBuffCBDisplay, SSD1306_Y_POS_0, SSD1306_Y_POS_64);
     frameInit(&screenFrame, displayFrame.buffer, FRAME_HEIGHT_DOT, FRAME_WIDTH_DOT);
 }
-
+uint8_t image[1] = {0xFF};//, 0b111};
 
 void vUserMenuTask(void *pvParameters)
 {
@@ -260,23 +260,29 @@ void vUserMenuTask(void *pvParameters)
     displauInit();
     buttonsInitButton(buttonActionDescription,
                      sizeof(buttonActionDescription) / sizeof(buttonActionDescription[0]));
+
+    frameClear(&screenFrame);
+    displaySetCursorXPos(0);
+    displaySendFrame(&displayFrame);
+    displaySetCursorXPos(0);
+    frameClear(&screenFrame);
 /*
-    frameClear(&screenFrame);
-    displaySetCursorXPos(0);
-    displaySendFrame(&displayFrame);
-    displaySetCursorXPos(0);
-    frameClear(&screenFrame);
-    frameSetPosition(&screenFrame, 0, 0);
-    frameAddImage(&screenFrame, schematicBitmaps, 64, 128, false);
-    displaySendFrame(&displayFrame);
+    for(uint32_t k = 0; k < 64; k++) {
+        frameSetPosition(&screenFrame, k, k);
+        frameAddImage(&screenFrame, image, 11, 1, false);
+    }
 */
+    frameSetPosition(&screenFrame, 0, 2);
+    frameAddImage(&screenFrame, image, 3, 1, false);
+    displaySendFrame(&displayFrame);
+
     while(1) {
         vTaskDelay(100);
         frameClear(&screenFrame);
         stringButton[10] = button + '0';
-        frameSetPosition(&screenFrame, 0, 0);
+        frameSetPosition(&screenFrame, 0, 2);
         frameAddString(&screenFrame, stringButton, ARIAL_11PTS, false);
-        frameSetPosition(&screenFrame, 0, 24);
+        frameSetPosition(&screenFrame, 0, 20);
         frameAddString(&screenFrame, (const uint8_t*)stringPressType[pressType], ARIAL_11PTS, false);
         displaySetCursorXPos(0);
         displaySetYArea(SSD1306_Y_POS_0, SSD1306_Y_POS_64);

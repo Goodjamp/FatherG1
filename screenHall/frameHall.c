@@ -48,40 +48,49 @@ static const uint8_t* getSymbol(const uint8_t *symbol,
     return fontBitmap + fontDescriptor[pos][ADDRESS_POS];
 }
 
-static bool addImage(FrameHandl inFrame, const uint8_t *image, uint8_t heigh, uint8_t width, bool leaveExisting)
+static bool addImage(FrameDescr *inFrame, const uint8_t *image, uint8_t heigh, uint8_t width, bool leaveExisting)
 {
+#define CLEAR_BIT_RANGE(B,E)   ~((uint8_t)((uint8_t)((uint8_t)0xFF >> B) << (B + 7 - E)) >> (7 - E));
     uint8_t  (*tImage)[width] = (uint8_t(*)[width])image;
     uint8_t  (*screenBuff)[inFrame->width] = (uint8_t(*)[inFrame->width])inFrame->buff;
     uint8_t yByte = inFrame->y >> 3;
     uint8_t yBit  = inFrame->y - yByte * 8;
-    uint8_t k;
     uint8_t i = 0;
     uint8_t yImag = 0;
-    uint8_t shiftImg = 0;
-
-    while(yImag < heigh) {
-        yImag += 8 - ( shiftImg = (yImag < heigh) ? (yBit) : (0));
-        for(k = 0; k < width; k++) {
+    uint8_t firstFrameBit = 0;
+    uint8_t lastFrameBit = 0;
+    uint8_t imagMaxY = heigh - 1;
+    uint8_t bitRange;0.
+0
+0   while(yImag < heigh) {
+        firstFrameBit = yBit;
+        lastFrameBit = ((imagMaxY - yImag) >= 7) ? (7) : (firstFrameBit + imagMaxY);
+        bitRange = CLEAR_BIT_RANGE( firstFrameBit, lastFrameBit);
+        for(uint8_t k = 0; k < width; k++) {
             if(leaveExisting) {
-                screenBuff[yByte][inFrame->x + k] |= (tImage[i][k] << shiftImg);
+                screenBuff[yByte][inFrame->x + k] |= tImage[i][k] << firstFrameBit;
             } else {
-                screenBuff[yByte][inFrame->x + k] = (tImage[i][k] << shiftImg);
+                screenBuff[yByte][inFrame->x + k] = (screenBuff[yByte][inFrame->x + k] & bitRange)
+                                                    | (tImage[i][k] << firstFrameBit);
             }
-
         }
-        i = yImag >> 3;
-        yImag += 8 - ( shiftImg = (yImag < heigh) ? (8 - yBit) : (0));
-        if(shiftImg == 0) {
-            break;
+        yImag += (lastFrameBit - firstFrameBit +1);
+        if(yImag > (imagMaxY)) {
+            return true;
         }
+        firstFrameBit = 0;
+        lastFrameBit = ((imagMaxY - yImag) > yBit) ? (yBit - 1) : (imagMaxY - yImag);
         yByte++;
-        for(k = 0; k < width; k++) {
+        bitRange = CLEAR_BIT_RANGE( firstFrameBit, lastFrameBit);
+        for(uint8_t k = 0; k < width; k++) {
             if(leaveExisting) {
-                screenBuff[yByte][inFrame->x + k] |= (tImage[i][k] >> shiftImg);
+                screenBuff[yByte][inFrame->x + k] |= tImage[i][k] >> (8 - yBit);
             } else {
-                screenBuff[yByte][inFrame->x + k] = (tImage[i][k] >> shiftImg);
+                screenBuff[yByte][inFrame->x + k] = (screenBuff[yByte][inFrame->x + k] & bitRange)
+                                                    | (tImage[i][k] >> (8 - yBit));
             }
         }
+        yImag += (lastFrameBit - firstFrameBit +1);
         i = yImag >> 3;
     }
     return true;

@@ -5,9 +5,13 @@ CONFIG -= qt
 
 SOURCES += \
         main.c \
-    ../../buttons.c
+    ../../buttons.c \
+    buttonsHall.c \
+    task.c
 
 HEADERS += \
-    ../../buttons.h
-
-INCLUDEPATH += ../
+    ../../buttons.h \
+    buttonsHall.h \
+    FreeRTOS.h \
+    task.h \
+    timers.h
