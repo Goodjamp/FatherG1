@@ -254,8 +254,22 @@ void displauInit(void)
 }
 uint8_t image[1] = {0xFF};//, 0b111};
 
+#include "OneWireInterfaceAPI.h"
+uint8_t dataReadData[] = {0xCC, 0xBE};
+uint8_t dataReadRom[] = {0x33};
+    uint8_t rezData[9];
+
+
 void vUserMenuTask(void *pvParameters)
 {
+    oneWireResetBloking();
+    oneWireSendBloking(dataReadData, sizeof(dataReadData));
+    oneWireReceiveBloking(rezData, 9);
+    oneWireResetBloking();
+    oneWireSendBloking(dataReadRom, sizeof(dataReadRom));
+    oneWireReceiveBloking(rezData, 9);
+    vTaskDelay(10);
+
     i2c_init();
     displauInit();
     buttonsInitButton(buttonActionDescription,

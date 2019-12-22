@@ -163,6 +163,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Measurement\Measurement.h" />
+		<Unit filename="OneWireInterfaceAPI\OneWireInterfaceAPI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OneWireInterfaceAPI\OneWireInterfaceAPI.h" />
 		<Unit filename="readme.txt" />
 		<Unit filename="relayHall\relayHall.c">
 			<Option compilerVar="CC" />
@@ -369,6 +373,16 @@
 		</Unit>
 		<Unit filename="stm32f103c8_flash.ld" />
 		<Unit filename="stm32f103c8_sram.ld" />
+		<Unit filename="TemperatureSensorAPI\TemperatureSensorApi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TemperatureSensorApi\TemperatureSensorApi.c.txt">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="TemperatureSensorAPI\TemperatureSensorApi.h" />
+		<Unit filename="TemperatureSensorApi\TemperatureSensorApi.h.txt">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="usbProto\usbProto.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -444,6 +458,15 @@
 				</target_debugging_settings>
 			</debugger>
 			<envvars />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
 		</Extensions>
 	</Project>
 </EmBitz_project_file>

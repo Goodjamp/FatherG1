@@ -60,9 +60,9 @@ static bool addImage(FrameDescr *inFrame, const uint8_t *image, uint8_t heigh, u
     uint8_t firstFrameBit = 0;
     uint8_t lastFrameBit = 0;
     uint8_t imagMaxY = heigh - 1;
-    uint8_t bitRange;0.
-0
-0   while(yImag < heigh) {
+    uint8_t bitRange;
+
+   while(yImag < heigh) {
         firstFrameBit = yBit;
         lastFrameBit = ((imagMaxY - yImag) >= 7) ? (7) : (firstFrameBit + imagMaxY);
         bitRange = CLEAR_BIT_RANGE( firstFrameBit, lastFrameBit);

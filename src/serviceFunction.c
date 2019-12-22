@@ -52,12 +52,12 @@ void initSysTic(void)
     TIM_ITConfig(SYS_TIMER, TIM_IT_Update, ENABLE);
     TIM_Cmd(SYS_TIMER, ENABLE);
 }
-
+/*
 void TIM2_IRQHandler(void) {
     TIM_ClearITPendingBit(SYS_TIMER, TIM_IT_Update);
     sysTimeCnt++;
 }
-
+*/
 uint32_t getSysTime(void)
 {
     return sysTimeCnt;

@@ -8,31 +8,31 @@
 #define  MAX_INT16 ((uint16_t)(0 - 1) >> 1)
 #define  MAX_INT32 ((uint32_t)(0 - 1) >> 1)
 
-static inline double dspCalcSincFirLpCoeff(FilterConfig config, uint32_t index)
+static inline float dspCalcSincFirLpCoeff(FilterConfig config, uint32_t index)
 {
-    double arg =  2 * M_PI * (1 / (config.fs)) * (index - ((double)config.q / 2) + 0.5) * config.df;
+    float arg =  2 * M_PI * (1 / (config.fs)) * (index - ((float)config.q / 2) + 0.5) * config.df;
     return sin(arg) / arg;
 }
 
-static inline double dspCalcBlackmanCoef(FilterConfig config, uint32_t index){
+static inline float dspCalcBlackmanCoef(FilterConfig config, uint32_t index){
 	return 0.42 - 0.5 * cosf(2 * M_PI * index / (config.q - 1))
 	            + 0.08 * cosf(4 * M_PI * index / (config.q - 1));
 }
 
 
-static inline double dspCalchHammingCoef(FilterConfig config, uint32_t index){
+static inline float dspCalchHammingCoef(FilterConfig config, uint32_t index){
 	return 0.54 - 0.46 * cosf(2 * M_PI * index / (config.q - 1));
 }
 
-static inline double dspCalcNuttallCoef(FilterConfig config, uint32_t index){
+static inline float dspCalcNuttallCoef(FilterConfig config, uint32_t index){
 	return 0.355768 - 0.48829 * cosf(2 * M_PI * index / (config.q - 1))
 	                + 0.14128 * cosf(4 * M_PI * index / (config.q - 1))
 	                - 0.01168 * cosf(6 * M_PI * index / (config.q - 1));
 }
 
-static double dspCalcCoeff(FilterConfig filtrConfig, uint32_t index)
+static float dspCalcCoeff(FilterConfig filtrConfig, uint32_t index)
 {
-    double coeff;
+    float coeff;
     switch(filtrConfig.type) {
     case LOW_PATH:
         coeff = dspCalcSincFirLpCoeff(filtrConfig, index);
@@ -66,10 +66,10 @@ bool dspInitFiltr(FiltrationHandler *handler,
                   uint32_t maxInput)
 {
     /******************Calculate scaling coefficient******************/
-    double   summCoeffNegative = 0;
-    double   summCoeffPositive = 0;
+    float   summCoeffNegative = 0;
+    float   summCoeffPositive = 0;
     for(uint32_t k = 0; k < filtrConfig.q; k++) {
-        double coeff = dspCalcCoeff(filtrConfig, k);
+        float coeff = dspCalcCoeff(filtrConfig, k);
         if(coeff >= 0) {
             summCoeffPositive += coeff;
         } else {

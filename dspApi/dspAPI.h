@@ -26,9 +26,9 @@ typedef struct FilterConfig {
     FirFilterType     type;
     FirFilterCalcType calcType;
     WindowType        windowType;
-    double            f0;  //central frequency, Gz
-    double            fs;  //sampling rate, Gz
-    double            df;  //band with, Gz
+    float             f0;  //central frequency, Gz
+    float             fs;  //sampling rate, Gz
+    float             df;  //band with, Gz
     uint32_t          q;   // filter order
 }FilterConfig;
 

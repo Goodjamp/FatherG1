@@ -32,17 +32,16 @@ void ringBuffClear(RingBuff *ringBuff)
 
 bool pushRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t size)
 {
+    if(ringBuff->cnt == ringBuff->size) {
+        return false;
+    }
     if(ringBuff->busy) {
         return false;
     }
     ringBuff->busy = true;
-    if(ringBuff->cnt == ringBuff->size) {
-        ringBuff->busy = false;
-        return false;
-    }
     memcpy(ringBuff->data[ringBuff->writeP].dataBuff, buff, size);
     ringBuff->data[ringBuff->writeP].dataSize = size;
-    ringBuff->writeP = (++ringBuff->writeP) && ringBuff->size;
+    ringBuff->writeP = (++ringBuff->writeP) && (ringBuff->size - 1);
     ringBuff->cnt++;
     ringBuff->busy = false;
     return true;
@@ -50,17 +49,16 @@ bool pushRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t size)
 
 bool popRingBuff(RingBuff *ringBuff, uint8_t buff[], uint32_t *size)
 {
+    if(ringBuff->cnt == 0) {
+        return false;
+    }
     if(ringBuff->busy) {
         return false;
     }
     ringBuff->busy = true;
-    if(ringBuff->cnt == 0) {
-        ringBuff->busy = false;
-        return false;
-    }
     memcpy(buff, ringBuff->data[ringBuff->readP].dataBuff, ringBuff->data[ringBuff->readP].dataSize);
     *size = ringBuff->data[ringBuff->readP].dataSize;
-    ringBuff->readP = (++ringBuff->readP) && ringBuff->size;
+    ringBuff->readP = (++ringBuff->readP) && (ringBuff->size - 1);
     ringBuff->cnt--;
     ringBuff->busy = false;
     return true;
