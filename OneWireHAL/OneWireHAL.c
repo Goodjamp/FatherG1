@@ -7,7 +7,7 @@
 #include "stm32f10x_tim.h"
 #include "stm32f10x_rcc.h"
 
-#include "OneWireInterfaceAPI.h"
+#include "OneWireHAL.h"
 /**One wire line bit order**/
 #define MSB_FIRST
 /**GPIO initializations definitions**/
@@ -67,10 +67,6 @@
     #define SHIFT_BIT_MARKER(X) (X >>= 1)
 #endif
 
-typedef enum{
-    ONE_WIRE_IDLE,
-    ONE_WIRE_BUSY,
-}OneWireState;
 
 static const uint16_t masterResetPulsWith = TIMER_PULSES_PER_US * MASTER_RESET_US;
 static const uint16_t masterResetPeriod   = TIMER_PULSES_PER_US * (MASTER_RESET_US
@@ -168,8 +164,10 @@ void DMA_TRANSACTION_COMPLETE_IRQ_HANDLER(void)
 {
     DMA_ClearITPendingBit(DMA_TRANSACTION_COMPLETE_FLAG);
     TIM_DMACmd(TIMER_DEF, TIMER_DMA_READ_CHANNEL, DISABLE);
+    TIM_DMACmd(TIMER_DEF, TIMER_DMA_SLOT_CHANNEL, DISABLE);
     TIM_Cmd(TIMER_DEF, DISABLE);
-    oneWireState = ONE_WIRE_IDLE;
+
+    oneWireState = ONE_WIRE_NORMAL;
     if(!oneWireCBLocal) {
         return;
     }
@@ -181,10 +179,10 @@ void oneWireInit(OneWireCB oneWireCB)
     oneWireCBLocal = oneWireCB;
 }
 
-bool oneWireReset(void)
+OneWireState oneWireReset(void)
 {
     if(oneWireState == ONE_WIRE_BUSY) {
-        return false;
+        return ONE_WIRE_BUSY;
     }
     oneWireState = ONE_WIRE_BUSY;
     if(!isOneWireInit) {
@@ -215,19 +213,16 @@ bool oneWireReset(void)
     TIM_DMACmd(TIMER_DEF, TIMER_DMA_SLOT_CHANNEL, ENABLE);
     TIM_GenerateEvent(TIMER_DEF, TIM_IT_CC1);
     TIM_GenerateEvent(TIMER_DEF, TIM_IT_Update);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_Update);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_CC1);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_CC2);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_Update);
+    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_Update | TIM_IT_CC1 | TIM_IT_CC2 );
     TIM_DMACmd(TIMER_DEF, TIMER_DMA_READ_CHANNEL, ENABLE);
     TIM_Cmd(TIMER_DEF, ENABLE);
-    return true;
+    return ONE_WIRE_NORMAL;
 }
 
-bool oneWireSend(uint8_t data[], uint32_t dataSize)
+OneWireState oneWireSend(uint8_t data[], uint32_t dataSize)
 {
     if(oneWireState == ONE_WIRE_BUSY) {
-        return false;
+        return ONE_WIRE_BUSY;
     }
     oneWireState = ONE_WIRE_BUSY;
     if(!isOneWireInit) {
@@ -259,18 +254,15 @@ bool oneWireSend(uint8_t data[], uint32_t dataSize)
     TIM_SetAutoreload(TIMER_DEF, masterRxTxPeriod);
     TIM_DMACmd(TIMER_DEF, TIMER_DMA_SLOT_CHANNEL, ENABLE);
     TIM_GenerateEvent(TIMER_DEF, TIM_IT_CC1);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_Update);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_CC1);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_CC2);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_Update);
+    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_Update | TIM_IT_CC1 | TIM_IT_CC2 );
     TIM_Cmd(TIMER_DEF, ENABLE);
-    return true;
+    return ONE_WIRE_NORMAL;
 }
 
-bool oneWireReceive(uint32_t dataSize)
+OneWireState oneWireReceive(uint32_t dataSize)
 {
     if(oneWireState == ONE_WIRE_BUSY) {
-        return false;
+        return ONE_WIRE_BUSY;
     }
     oneWireState = ONE_WIRE_BUSY;
     if(!isOneWireInit) {
@@ -309,15 +301,13 @@ bool oneWireReceive(uint32_t dataSize)
     TIM_DMACmd(TIMER_DEF, TIMER_DMA_SLOT_CHANNEL, ENABLE);
     TIM_GenerateEvent(TIMER_DEF, TIM_IT_CC1);
     TIM_GenerateEvent(TIMER_DEF, TIM_IT_Update);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_CC1);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_CC2);
-    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_Update);
+    TIM_ClearITPendingBit(TIMER_DEF, TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_Update);
     TIM_DMACmd(TIMER_DEF, TIMER_DMA_READ_CHANNEL, ENABLE);
     TIM_Cmd(TIMER_DEF, ENABLE);
-    return true;
+    return ONE_WIRE_NORMAL;
 }
 
-bool oneWireGetRxData(uint8_t buff[], uint32_t dataSize)
+void oneWireGetRxData(uint8_t buff[], uint32_t dataSize)
 {
     uint8_t bitMarker;
     uint32_t bitCnt = 0;
@@ -328,28 +318,35 @@ bool oneWireGetRxData(uint8_t buff[], uint32_t dataSize)
             buff[k] |= (receiveBuffer[bitCnt++] & (1 << DATA_BIT)) ? (bitMarker) : (0);
         } while(SHIFT_BIT_MARKER(bitMarker));
     }
-    return true;
 }
 
-bool oneWireResetBloking(void)
+OneWireState oneWireResetBloking(void)
 {
-    oneWireReset();
+    if(oneWireReset() == ONE_WIRE_BUSY) {
+        return ONE_WIRE_BUSY;
+    }
     while(oneWireState == ONE_WIRE_BUSY) {};
-    return receiveBuffer[0] & (1 << DATA_BIT);
+    return (receiveBuffer[0] & (1 << DATA_BIT)) ?
+               ONE_WIRE_RESET_ERROR :
+               ONE_WIRE_NORMAL;
 }
 
-void oneWireSendBloking(uint8_t data[], uint32_t dataSize)
+OneWireState oneWireSendBloking(uint8_t data[], uint32_t dataSize)
 {
-    oneWireSend(data, dataSize);
+    if(oneWireSend(data, dataSize) == ONE_WIRE_BUSY) {
+        return ONE_WIRE_BUSY;
+    }
     while(oneWireState == ONE_WIRE_BUSY) {};
-    return;
+    return ONE_WIRE_NORMAL;
 }
-void oneWireReceiveBloking(uint8_t data[], uint32_t dataSize)
+OneWireState oneWireReceiveBloking(uint8_t data[], uint32_t dataSize)
 {
-    oneWireReceive(dataSize);
+    if(oneWireReceive(dataSize) == ONE_WIRE_BUSY) {
+        return ONE_WIRE_BUSY;
+    }
     while(oneWireState == ONE_WIRE_BUSY) {};
     oneWireGetRxData(data, dataSize);
-    return;
+    return ONE_WIRE_NORMAL;
 }
 
 OneWireState oneWireGetState(void)

@@ -126,11 +126,11 @@ void displayInit(SendBuffCB sendBuffCB, Ssd1306YPos startY, Ssd1306YPos stopY)
     sendCommand(comandBuff,2);
     //sendCommand(0x00);                  // 0x00 horizontal addressing
 
-    comandBuff[0] = SSD1306_SEGREMAP | 0x0;     //A0
-    sendCommand(comandBuff,1);            // rotate screen 180
+    comandBuff[0] = SSD1306_SEGREMAP | 0x1;     //A0
+    sendCommand(comandBuff,1);            // rotate horizontal screen 180
 
-    comandBuff[0] = SSD1306_COMSCANINC;         //C0
-    sendCommand(comandBuff,1);            // rotate screen 180
+    comandBuff[0] = SSD1306_COMSCANINC | 0x8;        //C0
+    sendCommand(comandBuff,1);            // rotate vertical screen 180
 
     comandBuff[0] = SSD1306_SETCONTRAST;
     comandBuff[1] = 0xF0;

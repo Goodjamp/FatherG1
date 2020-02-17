@@ -254,21 +254,15 @@ void displauInit(void)
 }
 uint8_t image[1] = {0xFF};//, 0b111};
 
-#include "OneWireInterfaceAPI.h"
-uint8_t dataReadData[] = {0xCC, 0xBE};
-uint8_t dataReadRom[] = {0x33};
-    uint8_t rezData[9];
-
+#include "TemperatureSensorHAL.h"
+#include "stdio.h"
+uint8_t temperature[40];
 
 void vUserMenuTask(void *pvParameters)
 {
-    oneWireResetBloking();
-    oneWireSendBloking(dataReadData, sizeof(dataReadData));
-    oneWireReceiveBloking(rezData, 9);
-    oneWireResetBloking();
-    oneWireSendBloking(dataReadRom, sizeof(dataReadRom));
-    oneWireReceiveBloking(rezData, 9);
-    vTaskDelay(10);
+    int32_t temperarure;
+    temperatureInit();
+    temperatureGetTemperature(&temperarure);
 
     i2c_init();
     displauInit();
@@ -289,15 +283,25 @@ void vUserMenuTask(void *pvParameters)
     frameSetPosition(&screenFrame, 0, 2);
     frameAddImage(&screenFrame, image, 3, 1, false);
     displaySendFrame(&displayFrame);
-
+    int temp;
+    int mantisa;
     while(1) {
         vTaskDelay(100);
+
+        temperatureGetTemperature(&temperarure);
+        temp = temperarure / 10000;
+        sprintf(temperature, "T = %i.%i C", temp, temperarure - temp * 10000);
+
         frameClear(&screenFrame);
         stringButton[10] = button + '0';
         frameSetPosition(&screenFrame, 0, 2);
         frameAddString(&screenFrame, stringButton, ARIAL_11PTS, false);
         frameSetPosition(&screenFrame, 0, 20);
         frameAddString(&screenFrame, (const uint8_t*)stringPressType[pressType], ARIAL_11PTS, false);
+
+        frameSetPosition(&screenFrame, 0, 40);
+        frameAddString(&screenFrame, (const uint8_t*)temperature, ARIAL_11PTS, false);
+
         displaySetCursorXPos(0);
         displaySetYArea(SSD1306_Y_POS_0, SSD1306_Y_POS_64);
         displaySendFrame(&displayFrame);

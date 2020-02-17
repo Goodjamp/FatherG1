@@ -104,6 +104,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="displaySsd1306HAL\displaySsd1306HAL.h" />
+		<Unit filename="DS18B20Sensor\DS18B20Sensor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="DS18B20Sensor\DS18B20Sensor.h" />
 		<Unit filename="dspApi\dspAPI.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -163,10 +167,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Measurement\Measurement.h" />
-		<Unit filename="OneWireInterfaceAPI\OneWireInterfaceAPI.c">
+		<Unit filename="OneWireHAL\OneWireHAL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="OneWireInterfaceAPI\OneWireInterfaceAPI.h" />
+		<Unit filename="OneWireHAL\OneWireHAL.h" />
 		<Unit filename="readme.txt" />
 		<Unit filename="relayHall\relayHall.c">
 			<Option compilerVar="CC" />
@@ -373,16 +377,16 @@
 		</Unit>
 		<Unit filename="stm32f103c8_flash.ld" />
 		<Unit filename="stm32f103c8_sram.ld" />
-		<Unit filename="TemperatureSensorAPI\TemperatureSensorApi.c">
+		<Unit filename="TemperatureSensorAPI\TemperatureSensorApi.c.txt">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="TemperatureSensorAPI\TemperatureSensorApi.h.txt">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="TemperatureSensorHAL\TemperatureSensorHAL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="TemperatureSensorApi\TemperatureSensorApi.c.txt">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="TemperatureSensorAPI\TemperatureSensorApi.h" />
-		<Unit filename="TemperatureSensorApi\TemperatureSensorApi.h.txt">
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="TemperatureSensorHAL\TemperatureSensorHAL.h" />
 		<Unit filename="usbProto\usbProto.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -395,7 +399,7 @@
 			<code_completion />
 			<debugger>
 				<target_debugging_settings target="Debug" active_interface="OpenOCD">
-					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="STM32F103.svd" dont_start_server="false" backoff_time="5000" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
+					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="${EMBITZ}\share\contrib\openocd\bin" executable="openocd.exe" description="STM32F103.svd" dont_start_server="false" backoff_time="100" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All">
 							<option opt_id="ID_BOARD_CH" opt_value="" />
 							<option opt_id="ID_INTERFACE_CH" opt_value="" />
@@ -407,6 +411,7 @@
 							<option opt_id="ID_SEMIHOST_CHECK" opt_value="0" />
 							<option opt_id="ID_ADD_COMMANDS" opt_value="" />
 							<option opt_id="ID_ADD_CMNDS" opt_value="-f interface/cmsis-dap.cfg -f target/stm32f1x.cfg" />
+							<option opt_id="ID_FLASH_DOWNLOAD" opt_value="1" />
 						</family_options>
 					</debug_interface>
 					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBITZ}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="0" reg_filter="0" active_family="STMicroelectronics" gdb_before_conn="" gdb_after_conn="">
