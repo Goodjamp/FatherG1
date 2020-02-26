@@ -167,6 +167,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Measurement\Measurement.h" />
+		<Unit filename="Menu\Menu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Menu\Menu.h" />
 		<Unit filename="OneWireHAL\OneWireHAL.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -377,12 +381,6 @@
 		</Unit>
 		<Unit filename="stm32f103c8_flash.ld" />
 		<Unit filename="stm32f103c8_sram.ld" />
-		<Unit filename="TemperatureSensorAPI\TemperatureSensorApi.c.txt">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="TemperatureSensorAPI\TemperatureSensorApi.h.txt">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="TemperatureSensorHAL\TemperatureSensorHAL.c">
 			<Option compilerVar="CC" />
 		</Unit>
