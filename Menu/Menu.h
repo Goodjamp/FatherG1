@@ -14,6 +14,8 @@ typedef enum MenuEvent {
     MENU_EVENT_BL_0,    // Button 0 long press
     MENU_EVENT_BS_1,    // Button 1 short press
     MENU_EVENT_BL_1,    // Button 1 long press
+    MENU_EVENT_BS_2,    // Button 1 short press
+    MENU_EVENT_BL_2,    // Button 1 long press
     MENU_EVENT_TIMER,   // Timer
 } MenuEvent;
 

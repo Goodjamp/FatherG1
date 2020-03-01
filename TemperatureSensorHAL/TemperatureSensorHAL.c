@@ -79,7 +79,7 @@ bool oneWireResetCb(void)
     return false;
 }
 
-bool temperatureInit(void)
+bool temperatureConfig(void)
 {
     Ds18b20Cb ds18b20Cb = {
         .readCb  = oneWireRead,

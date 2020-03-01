@@ -4,7 +4,7 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-bool temperatureInit(void);
+bool temperatureConfig(void);
 bool temperatureGetTemperature(int32_t *temperature);
 
 

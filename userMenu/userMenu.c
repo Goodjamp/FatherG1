@@ -1,35 +1,28 @@
 #include "stdint.h"
+#include "stdio.h"
 #include "stdbool.h"
+
+#include "stm32f10x_rcc.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
+#include "queue.h"
 
+#include "Menu.h"
 #include "userMenu.h"
-
-#include "displaySsd1306HAL.h"
-#include "i2c_source.h"
+#include "DisplayInterfaceInit.h"
 #include "frameHall.h"
-
 #include "buttons.h"
-
-#define I2C_SENSOR           I2C_1
-#define I2C_SENSOR_FRQ_HZ    400000
-
-#define I2C1_SCL            GPIO_Pin_6       //PB6 ch1
-#define I2C1_SCL_AF_GPIO    GPIO_PinSource6  //PB8 ch1
-#define I2C1_SCL_PORT       GPIOB            //CSCL PORT
-
-#define I2C1_SDA            GPIO_Pin_7       //PB7 ch1
-#define I2C1_SDA_AF_GPIO    GPIO_PinSource7  //PB7 ch1
-#define I2C1_SDA_PORT       GPIOB            //CSDA PORT
+#include "buttonsHall.h"
+#include "TemperatureSensorHAL.h"
 
 void buttonShortCb0(void);
 void buttonLongCb0(void);
-void buttonLongLongCb0(void);
 void buttonShortCb1(void);
 void buttonLongCb1(void);
-void buttonLongLongCb1(void);
+void buttonShortCb2(void);
+void buttonLongCb2(void);
 
 static const ButtonActionDescription buttonActionDescription[] = {
     [0] = {
@@ -43,249 +36,246 @@ static const ButtonActionDescription buttonActionDescription[] = {
         .pressType      = PRESS_LONG,
     },
     [2] = {
-        .buttonActionCb = buttonLongLongCb0,
-        .buttonNumber   = 0,
-        .pressType      = PRESS_LONG_LONG,
-    },
-    [3] = {
         .buttonActionCb = buttonShortCb1,
         .buttonNumber   = 1,
         .pressType      = PRESS_SHORT,
     },
-    [4] = {
+    [3] = {
         .buttonActionCb = buttonLongCb1,
         .buttonNumber   = 1,
         .pressType      = PRESS_LONG,
     },
+    [4] = {
+        .buttonActionCb = buttonShortCb2,
+        .buttonNumber   = 2,
+        .pressType      = PRESS_SHORT,
+    },
     [5] = {
-        .buttonActionCb = buttonLongLongCb1,
-        .buttonNumber   = 1,
-        .pressType      = PRESS_LONG_LONG,
+        .buttonActionCb = buttonLongCb2,
+        .buttonNumber   = 2,
+        .pressType      = PRESS_LONG,
     },
 };
 
 PRESS_TYPE pressType = PRESS_SHORT;
 extern const uint8_t schematicBitmaps[];
 uint32_t button = 0;
-uint8_t stringButton[20] = "BUTTON N:  ";
-const char *stringPressType[] = {
-    [PRESS_SHORT]     = "SHORT",
-    [PRESS_LONG]      = "LONG",
-    [PRESS_LONG_LONG] = "LONG_LONG",
-};
+static FrameDescr   screenFrame;
+static MenuItem menuItemRoot;
+static MenuItem menuItemF1;
+static MenuItem menuItemF2;
+static MenuItem menuItemF3;
+static MenuItem *menu = &menuItemRoot;
+static QueueHandle_t  buttonEventQueue;
+static TimerHandle_t  menuTimer;
+
+uint8_t menuStr[40];
+
 
 void buttonShortCb0(void)
 {
-    button = 0;
-    pressType = PRESS_SHORT;
-}
-void buttonLongCb0(void)
-{
-    button = 0;
-    pressType = PRESS_LONG;
+    uint8_t event = MENU_EVENT_BS_0;
+    xQueueSend(buttonEventQueue, &event, 100);
 }
 
-void buttonLongLongCb0(void)
+void buttonLongCb0(void)
 {
-    button = 0;
-    pressType = PRESS_LONG_LONG;
+    uint8_t event = MENU_EVENT_BL_0;
+    xQueueSend(buttonEventQueue, &event, 100);
 }
 
 void buttonShortCb1(void)
 {
-    button = 1;
-    pressType = PRESS_SHORT;
+    uint8_t event = MENU_EVENT_BS_1;
+    xQueueSend(buttonEventQueue, &event, 100);
 }
 
 void buttonLongCb1(void)
 {
-    button = 1;
-    pressType = PRESS_LONG;
+    uint8_t event = MENU_EVENT_BL_1;
+    xQueueSend(buttonEventQueue, &event, 100);
 }
 
-void buttonLongLongCb1(void)
+void buttonShortCb2(void)
 {
-    button = 1;
-    pressType = PRESS_LONG_LONG;
+    uint8_t event = MENU_EVENT_BS_2;
+    xQueueSend(buttonEventQueue, &event, 100);
 }
 
-//---------------------------------I2C user implementation functions-----------------------
-void i2cInitGpio(uint8_t step){
-
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-	RCC_APB2PeriphClockCmd(RCC_APB2ENR_IOPBEN, ENABLE);
-
-	// config I2C CSCL GPIO
-	GPIO_InitStructure.GPIO_Pin = I2C1_SCL;
-	GPIO_InitStructure.GPIO_Mode = (step) ? (GPIO_Mode_AF_OD) : (GPIO_Mode_IPU);
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_Init(I2C1_SCL_PORT, &GPIO_InitStructure);
-
-	// config I2C CSDA GPIO
-	GPIO_InitStructure.GPIO_Pin = I2C1_SDA;
-	GPIO_InitStructure.GPIO_Mode =  (step) ? (GPIO_Mode_AF_OD) : ( GPIO_Mode_IPU);
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_Init(I2C1_SDA_PORT, &GPIO_InitStructure);
-
-	// Enable Alternate function
-	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-}
-
-
-void delay_us(uint32_t timeout)
+void buttonLongCb2(void)
 {
-	uint32_t steps = timeout/10;
-    volatile uint32_t cnt = 0;
-	while( cnt++ < steps){};
+    uint8_t event = MENU_EVENT_BL_2;
+    xQueueSend(buttonEventQueue, &event, 100);
 }
 
-void i2cRecover(uint32_t i2cFRQ)
+void menuTimerCb( TimerHandle_t xTimer )
 {
-    uint32_t halfPeriodUs = SystemCoreClock/(i2cFRQ * 2);
-	GPIO_InitTypeDef GPIO_InitStructure;
-	RCC_APB2PeriphClockCmd(RCC_APB2ENR_IOPBEN, ENABLE);
-/*
-	if(GPIO_ReadInputDataBit(I2C1_SCL_PORT, I2C1_SDA) == Bit_SET)
-	{
-		return;
-	}
-*/
-	GPIO_SetBits(I2C1_SCL_PORT, I2C1_SCL);
-	// config I2C CSCL GPIO
-	GPIO_InitStructure.GPIO_Pin   = I2C1_SCL;
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_OD;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	/*Config CSL functions of I2C1*/
-	GPIO_Init(I2C1_SCL_PORT, &GPIO_InitStructure);
-    GPIO_SetBits(I2C1_SCL_PORT, I2C1_SCL);
-
-	GPIO_SetBits(I2C1_SDA_PORT, I2C1_SDA);
-	// config I2C CSDA GPIO
-	GPIO_InitStructure.GPIO_Pin   = I2C1_SDA;
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_OD;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_Init(I2C1_SDA_PORT, &GPIO_InitStructure);
-	GPIO_SetBits(I2C1_SDA_PORT, I2C1_SDA);
-    /*Generate start squensys*/
-    delay_us(halfPeriodUs);
-    GPIO_ResetBits(I2C1_SDA_PORT, I2C1_SDA);
-    delay_us(halfPeriodUs);
-    GPIO_SetBits(I2C1_SCL_PORT, I2C1_SCL);
-    delay_us(halfPeriodUs);
-
-	//gen 9 pulses
-    volatile uint8_t cnt = 0;
-	#define NUMBER_PULSES    9
-	while(cnt++ < NUMBER_PULSES)
-	{
-		GPIO_ResetBits(I2C1_SCL_PORT, I2C1_SCL);
-		delay_us(halfPeriodUs);
-		GPIO_SetBits(I2C1_SCL_PORT, I2C1_SCL);
-		delay_us(halfPeriodUs);
-	}
-
-	// generate stop order
-	GPIO_ResetBits(I2C1_SCL_PORT, I2C1_SCL);
-	GPIO_ResetBits(I2C1_SDA_PORT, I2C1_SDA);
-	delay_us(halfPeriodUs);
-	GPIO_SetBits(I2C1_SCL_PORT, I2C1_SCL);
-	delay_us(halfPeriodUs);
-	GPIO_SetBits(I2C1_SDA_PORT, I2C1_SDA);
-
-	/*One more time*/
-	delay_us(halfPeriodUs);
-    /*Generate start squensys*/
-    delay_us(halfPeriodUs);
-    GPIO_ResetBits(I2C1_SDA_PORT, I2C1_SDA);
-    delay_us(halfPeriodUs);
-    GPIO_SetBits(I2C1_SCL_PORT, I2C1_SCL);
-    delay_us(halfPeriodUs);
-
-	//gen 9 pulses
-    cnt = 0;
-	#define NUMBER_PULSES    9
-	while(cnt++ < NUMBER_PULSES)
-	{
-		GPIO_ResetBits(I2C1_SCL_PORT, I2C1_SCL);
-		delay_us(halfPeriodUs);
-		GPIO_SetBits(I2C1_SCL_PORT, I2C1_SCL);
-		delay_us(halfPeriodUs);
-	}
-
-	// generate stop order
-	GPIO_ResetBits(I2C1_SCL_PORT, I2C1_SCL);
-	GPIO_ResetBits(I2C1_SDA_PORT, I2C1_SDA);
-	delay_us(halfPeriodUs);
-	GPIO_SetBits(I2C1_SCL_PORT, I2C1_SCL);
-	delay_us(halfPeriodUs);
-	GPIO_SetBits(I2C1_SDA_PORT, I2C1_SDA);
-
-	i2cInitGpio(1);
+    uint8_t event = MENU_EVENT_TIMER;
+    xQueueSend(buttonEventQueue, &event, 100);
 }
 
 
-uint32_t i2cgetTimeMs(void)
+void displayConfig(void)
 {
-	return xTaskGetTickCount();
+    displayInterfaceInit();
+    frameInit(&screenFrame, displayInterfaceGetFrameBuffer(), FRAME_HEIGHT, FRAME_WIDTH);
 }
 
-void i2c_init(void){
-	I2C_configDef i2c_configParamiters = {
-			.frequencyI2C = I2C_SENSOR_FRQ_HZ
-	};
-	i2cConfig(I2C_SENSOR, &i2c_configParamiters);
-}
-
-bool sendBuffCBDisplay(uint8_t displayAddres, uint8_t data[], uint16_t dataSize)
+void buttonsConfig(void)
 {
-    i2cTxData(I2C_1, displayAddres, data[0], (dataSize - 1) , &data[1]);
-    return true;
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+    buttonsInitButton(buttonActionDescription,
+                      sizeof(buttonActionDescription) / sizeof(buttonActionDescription[0]),
+                      readButton);
+#define MAX_BUTTON_EVENTS 10
+    buttonEventQueue = xQueueCreate(MAX_BUTTON_EVENTS, 1);
+    menuTimer        = xTimerCreate( "menuTimer", 1000, pdTRUE, ( void * )0, menuTimerCb);
 }
 
-FrameDescr screenFrame;
-DisplayFrame displayFrame;
-
-
-void displauInit(void)
+/*Root menu. Use for selected one sub menu and show generic data*/
+MenuStatus menuRoot(MenuEvent event, uint32_t *children)
 {
-    displayInit(sendBuffCBDisplay, SSD1306_Y_POS_0, SSD1306_Y_POS_64);
-    frameInit(&screenFrame, displayFrame.buffer, FRAME_HEIGHT_DOT, FRAME_WIDTH_DOT);
+    static uint32_t subMenCnt;
+    switch(event) {
+    case MENU_EVENT_ENTER: // entr to menu
+        subMenCnt = 0;
+        frameClear(&screenFrame);
+        frameSetPosition(&screenFrame, 0, 2);
+        sprintf(menuStr,"ROOT, s = %u", subMenCnt);
+        frameAddString(&screenFrame, menuStr, ARIAL_11PTS, false);
+        displayInterfaceSetCursorXPos(0);
+        displayInterfaceSendFrame();
+        return MENU_STATUS_IDLE;
+    case MENU_EVENT_BS_0: // switch children
+        if(++subMenCnt > 2) {
+            subMenCnt = 0;
+        }
+        frameClear(&screenFrame);
+        frameSetPosition(&screenFrame, 0, 2);
+        sprintf(menuStr,"ROOT, s = %u", subMenCnt);
+        frameAddString(&screenFrame, menuStr, ARIAL_11PTS, false);
+        displayInterfaceSetCursorXPos(0);
+        displayInterfaceSendFrame();
+        return MENU_STATUS_IDLE;
+    case MENU_EVENT_BS_1:
+        *children = subMenCnt;
+        return MENU_STATUS_ENTER;
+    default:
+        return MENU_STATUS_IDLE;
+    }
 }
-uint8_t image[1] = {0xFF};//, 0b111};
 
-#include "TemperatureSensorHAL.h"
-#include "stdio.h"
-uint8_t temperature[40];
+/**Menu F1. Use for show temperature**/
+MenuStatus menuF1(MenuEvent event, uint32_t *children)
+{
+    switch(event) {
+    case MENU_EVENT_ENTER:
+    case MENU_EVENT_TIMER:
+    {
+        /**Measurement and show temperature**/
+        uint32_t temp;
+        uint32_t temperarure;
+        frameClear(&screenFrame);
+        frameSetPosition(&screenFrame, 10, 2);
+        frameAddString(&screenFrame, "TEMPERATURE", ARIAL_8PTS, false);
+        frameSetPosition(&screenFrame, 45, 22);
+        if(temperatureGetTemperature(&temperarure)) {
+            temp = temperarure / 10000;
+            sprintf(menuStr, "%i.%i C", temp, temperarure / 1000 - temp * 10);
+            frameAddString(&screenFrame, menuStr, ARIAL_11PTS, false);
+        } else {
+            frameAddString(&screenFrame, "Sensor ERROR", ARIAL_8PTS, false);
+        }
+        displayInterfaceSetCursorXPos(0);
+        displayInterfaceSendFrame();
+        if(event == MENU_EVENT_ENTER) {
+            xTimerStart(menuTimer, portMAX_DELAY);
+        }
+        return MENU_STATUS_IDLE;
+      }
+    case MENU_EVENT_BS_0:
+        xTimerStop(menuTimer, portMAX_DELAY);
+        return MENU_STATUS_EXIT;
+    default:
+        return MENU_STATUS_IDLE;
+    }
+}
+
+/**Menu F2. Use for show schematic**/
+MenuStatus menuF2(MenuEvent event, uint32_t *children)
+{
+    static uint32_t subMenuCnt;
+    switch(event) {
+    case MENU_EVENT_ENTER:
+        frameClear(&screenFrame);
+        frameSetPosition(&screenFrame, 0, 2);
+        sprintf(menuStr,"%s", "menuF2");
+        frameAddString(&screenFrame, menuStr, ARIAL_11PTS, false);
+        displayInterfaceSetCursorXPos(0);
+        displayInterfaceSendFrame();
+        return MENU_STATUS_IDLE;
+    case MENU_EVENT_BS_0:
+        return MENU_STATUS_EXIT;
+    case MENU_EVENT_BS_1:
+        return MENU_STATUS_ENTER;
+    default:
+        return MENU_STATUS_IDLE;
+    }
+}
+
+/**Menu F1. Use for show measurement settings**/
+MenuStatus menuF3(MenuEvent event, uint32_t *children)
+{
+    switch(event) {
+    case MENU_EVENT_ENTER: // entr to menu
+        frameClear(&screenFrame);
+        frameSetPosition(&screenFrame, 0, 2);
+        sprintf(menuStr,"%s", "menuF3");
+        frameAddString(&screenFrame, menuStr, ARIAL_11PTS, false);
+        displayInterfaceSetCursorXPos(0);
+        displayInterfaceSendFrame();
+        return MENU_STATUS_IDLE;
+    case MENU_EVENT_BS_0:
+        return MENU_STATUS_EXIT;
+    case MENU_EVENT_BS_1:
+        return MENU_STATUS_ENTER;
+    default:
+        return MENU_STATUS_IDLE;
+    }
+}
+
+void menuConfig(void)
+{
+    ADD_MENU_ITEM(menuItemRoot, menuRoot, NULL,          &menuItemF1, &menuItemF2, &menuItemF3);
+    ADD_MENU_ITEM(menuItemF1,   menuF1,   &menuItemRoot);
+    ADD_MENU_ITEM(menuItemF2,   menuF2,   &menuItemRoot);
+    ADD_MENU_ITEM(menuItemF3,   menuF3,   &menuItemRoot);
+}
+
+extern const uint8_t iMESG_IMAGEBitmaps[];
 
 void vUserMenuTask(void *pvParameters)
 {
     int32_t temperarure;
-    temperatureInit();
-    temperatureGetTemperature(&temperarure);
-
-    i2c_init();
-    displauInit();
-    buttonsInitButton(buttonActionDescription,
-                     sizeof(buttonActionDescription) / sizeof(buttonActionDescription[0]));
+    int8_t temp;
+    buttonsConfig();
+    temperatureConfig();
+    displayConfig();
+    menuConfig();
 
     frameClear(&screenFrame);
-    displaySetCursorXPos(0);
-    displaySendFrame(&displayFrame);
-    displaySetCursorXPos(0);
-    frameClear(&screenFrame);
-/*
-    for(uint32_t k = 0; k < 64; k++) {
-        frameSetPosition(&screenFrame, k, k);
-        frameAddImage(&screenFrame, image, 11, 1, false);
-    }
-*/
-    frameSetPosition(&screenFrame, 0, 2);
-    frameAddImage(&screenFrame, image, 3, 1, false);
-    displaySendFrame(&displayFrame);
-    int temp;
-    int mantisa;
+    frameSetPosition(&screenFrame, 34, 2);
+    frameAddImage(&screenFrame, iMESG_IMAGEBitmaps, 59, 60, false);
+    displayInterfaceSetCursorXPos(0);
+    displayInterfaceSendFrame();
+
+    vTaskDelay(2000);
+
     while(1) {
+        xQueueReceive(buttonEventQueue, &temp, portMAX_DELAY);
+        menuProcessing(&menu, (MenuEvent)temp);
+        /*
         vTaskDelay(100);
 
         temperatureGetTemperature(&temperarure);
@@ -302,9 +292,8 @@ void vUserMenuTask(void *pvParameters)
         frameSetPosition(&screenFrame, 0, 40);
         frameAddString(&screenFrame, (const uint8_t*)temperature, ARIAL_11PTS, false);
 
-        displaySetCursorXPos(0);
-        displaySetYArea(SSD1306_Y_POS_0, SSD1306_Y_POS_64);
-        displaySendFrame(&displayFrame);
-        i2c_init();
+        displayInterfaceSetCursorXPos(0);
+        displayInterfaceSendFrame();
+        */
     }
 }

@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 
-#define BUTTON_CNT 2
+#define BUTTON_CNT 3
 
 typedef enum {
     PRESS_SHORT,
@@ -13,6 +13,7 @@ typedef enum {
 } PRESS_TYPE;
 
 typedef void (*ButtonActionCb)(void);
+typedef bool (*ReadButtonCb)(uint16_t buttonNumber, bool *rezRead);
 
 typedef struct {
     ButtonActionCb buttonActionCb;
@@ -20,7 +21,9 @@ typedef struct {
     PRESS_TYPE pressType;
 } ButtonActionDescription;
 
-void buttonsInitButton(const ButtonActionDescription *buttonDescription, uint32_t size);
+void buttonsInitButton(const ButtonActionDescription *buttonDescription,
+                       uint32_t size,
+                       ReadButtonCb readButtonCb);
 void vButtonsTask(void *pvParameters);
 
 #endif

@@ -5,9 +5,9 @@
 #include "displaySsd1306HAL.h"
 
 #include "symbolsArial11pts.h"
-//#include "symbolsArial8pts.h"
-#include "symbolsArial16pts.h"
-#include "symbolsSegoePrint14pts.h"
+#include "symbolsArial8pts.h"
+//#include "symbolsArial16pts.h"
+//#include "symbolsSegoePrint14pts.h"
 
 /*fontDescriptor fields */
 #define WIDTH_POS   0
@@ -22,9 +22,9 @@
 
 static const uint32_t *fontInfoList[] =
 {
-    //[ARIAL_8PTS]  = (uint32_t*)arial_8ptFontInfo,
+    [ARIAL_8PTS]  = (uint32_t*)arial_8ptFontInfo,
     [ARIAL_11PTS] = (uint32_t*)arial_11ptFontInfo,
-    [ARIAL_16PTS] = (uint32_t*)arial_16ptFontInfo,
+    //[ARIAL_16PTS] = (uint32_t*)arial_16ptFontInfo,
     //[SEGOEPRINT_14PTS] = (uint32_t*)segoePrint_14ptFontInfo,
 };
 
@@ -64,7 +64,7 @@ static bool addImage(FrameDescr *inFrame, const uint8_t *image, uint8_t heigh, u
 
    while(yImag < heigh) {
         firstFrameBit = yBit;
-        lastFrameBit = ((imagMaxY - yImag) >= 7) ? (7) : (firstFrameBit + imagMaxY);
+        lastFrameBit = ((imagMaxY - yImag) > (8 - firstFrameBit)) ? (7) : (firstFrameBit + imagMaxY);
         bitRange = CLEAR_BIT_RANGE( firstFrameBit, lastFrameBit);
         for(uint8_t k = 0; k < width; k++) {
             if(leaveExisting) {

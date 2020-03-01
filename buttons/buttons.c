@@ -6,7 +6,6 @@
 #include "timers.h"
 
 #include "buttons.h"
-#include "buttonsHall.h"
 
 #define DEBOUNCE_CNT           3
 #define POST_PRESS_TIMEOUT_CNT 25
@@ -27,10 +26,14 @@ static struct buttonProcessing {
     uint32_t pressTime;
     bool     pressType[PRESS_TYPE_CNT];
 }buttonProcessing[BUTTON_CNT];
+static ReadButtonCb readButton;
 
 
-void buttonsInitButton(const ButtonActionDescription *buttonDescription, uint32_t size)
+void buttonsInitButton(const ButtonActionDescription *buttonDescription,
+                       uint32_t size,
+                       ReadButtonCb readButtonCb)
 {
+    readButton = readButtonCb;
     buttonDescriptionLocal = buttonDescription;
     buttonsDescrSize = size;
     //clear previous state button configuration structure

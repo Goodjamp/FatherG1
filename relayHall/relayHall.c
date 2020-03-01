@@ -15,7 +15,7 @@ static const struct {
     [0] = {
         .port      = GPIOB,
         .portBuss  = RCC_APB2ENR_IOPBEN,
-        .pin       = GPIO_Pin_4,
+        .pin       = GPIO_Pin_0,
         },
 };
 
