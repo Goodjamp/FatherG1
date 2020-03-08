@@ -30,7 +30,7 @@ void frameInit             (FrameHandl inFrame, uint8_t *frameBuff, uint16_t hei
 bool frameClear            (FrameHandl inFrame);
 bool frameSetPosition      (FrameHandl inFrame, uint8_t inX, uint8_t inY);
 bool frameAddString        (FrameHandl inFrame, const uint8_t *str, SymbolType symbolType, bool leaveExisting);
-bool frameAddImage         (FrameHandl inFrame, const uint8_t *image, uint8_t imageHeigh, uint8_t imageWidth, bool leaveExisting);
+bool frameAddImage         (FrameHandl inFrame, const uint8_t *image, uint8_t imageHeigh, uint8_t imageWidth, bool leaveExisting, bool invers);
 void frameAddArea          (FrameHandl inFrame, Point beginPoint, uint8_t height, uint8_t width);
 void frameAddRectangle     (FrameHandl inFrame, Point upLeft, Point downRight, uint8_t width);
 void frameAddHorizontalLine(FrameHandl inFrame, Point startPoint, uint8_t width, uint8_t length);

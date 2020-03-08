@@ -1,6 +1,9 @@
 #include "stdint.h"
 #include "stdbool.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 #include "i2c_source.h"
 #include "displaySsd1306HAL.h"
 
@@ -163,12 +166,12 @@ uint8_t* displayInterfaceGetFrameBuffer(void)
 
 bool displayInterfaceSendFrame(void)
 {
-    displaySendFrame(&displayFrame);
+    return displaySendFrame(&displayFrame);
 }
 
 bool displayInterfaceSetCursorXPos(uint8_t posX)
 {
-    displaySetCursorXPos(posX);
+    return displaySetCursorXPos(posX);
 }
 
 

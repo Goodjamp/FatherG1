@@ -38,8 +38,8 @@
 #define MES_ADC_READY_FLAG  (1 << 3)
 #define MES_ALL_ACTION       (MES_SHORT_MES_FLAG | MES_START_MES_FLAG | MES_STOP_MES_FLAG | MES_ADC_READY_FLAG)
 
-static MeasShortCompliteCb shortCompliteCb;
-static MeasContinuousCompleteCb continuousCompleteCb;
+volatile static MeasShortCompliteCb shortCompliteCb;
+volatile static MeasContinuousCompleteCb continuousCompleteCb;
 static FiltrationHandler filtrationHandler;
 static FilterConfig firFilterConfig = {
     .type = LOW_PATH,
@@ -63,7 +63,10 @@ struct {
 static struct {
     uint32_t debouncePeriodMs;
     uint32_t measPeriodMs;
-} measTimings;
+} measTimings = {
+    .debouncePeriodMs = 100,
+    .measPeriodMs     = 100
+};
 static EventGroupHandle_t mesEvent;
 static bool mesStart = false;
 
@@ -97,7 +100,7 @@ static void rccConfig(void) {
 
 static void measShort(void)
 {
-    EventBits_t eventBits;
+    volatile EventBits_t eventBits;
     uint32_t mesRez = 0;
     uint32_t reCznt = 0;
     measurementStop();
@@ -109,7 +112,7 @@ static void measShort(void)
     //start measurement
     measurementStart();
     while(reCznt <= FILTER_ORDER) {
-        eventBits = xEventGroupWaitBits(mesEvent, 0, pdTRUE, pdTRUE, portMAX_DELAY);
+        eventBits = xEventGroupWaitBits(mesEvent, MES_ADC_READY_FLAG, pdTRUE, pdTRUE, portMAX_DELAY);
         if(!(eventBits &MES_ADC_READY_FLAG)) {
             continue;
         }

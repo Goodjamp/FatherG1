@@ -83,12 +83,12 @@ bool dspInitFiltr(FiltrationHandler *handler,
         summCoeffPositive = summCoeffNegative;
     }
     handler->scallingCoeff = (int32_t)(MAX_INT32 / (maxInput * summCoeffPositive));
-    /************Scaling filter coefficients******************/
+    /*************Scaling filter coefficients******************************/
     for(uint32_t k = 0; k < filtrConfig.q; k++) {
         coeffBuff[k] = (int32_t)(dspCalcCoeff(filtrConfig, k) * handler->scallingCoeff);
     }
     handler->scallingCoeff = (int32_t)(handler->scallingCoeff * 2.0 * M_PI);
-    /**********Initili filter handler*****************************/
+    /***********Initializations filter handler*****************************/
     handler->q     = filtrConfig.q;
     handler->first = buff;
     handler->last  = &buff[handler->q - 1];
